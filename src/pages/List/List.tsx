@@ -1,0 +1,80 @@
+import React, { useState } from 'react';
+import { IoIosAdd } from 'react-icons/io';
+import './List.css';
+
+interface CardArray {
+	id: number;
+	title: string;
+}
+
+interface ColList {
+	id: number;
+	title: string;
+	card?: CardArray[];
+}
+
+const List: React.FC = () => {
+	const [addFirstList, setAddFirstList] = useState<boolean>(true);
+	// const [addFirstCard, setAddFirstCard] = useState<boolean>(true);
+	const [listText, setListText] = useState<string>('');
+	const [lists, setLists] = useState<ColList[]>([]);
+
+	const handleAddFirstList = () => {
+		setAddFirstList(false);
+	};
+
+	const handleList = () => {
+		setLists([...lists, { id: Date.now(), title: listText }]);
+		setListText('');
+	};
+
+	const handleCreateCard = (id: number) => {
+		const addCard = lists.find(list => list.id === id);
+		console.log(addCard);
+		// setAddFirstCard(false);
+	};
+
+	return (
+		<div className='all-lists'>
+			{lists.map(list => (
+				<div key={list.id} className='single-list'>
+					<h5 className='col-name'>{list.title}</h5>
+					<div>
+						<button
+							type='button'
+							className='add-list add-card'
+							onClick={() => handleCreateCard(list.id)}
+						>
+							<IoIosAdd />
+							Add a Card
+						</button>
+					</div>
+				</div>
+			))}
+			{addFirstList ? (
+				<button type='button' className='add-list' onClick={handleAddFirstList}>
+					<IoIosAdd />
+					Add a list
+				</button>
+			) : (
+				<div>
+					<div className='single-list'>
+						<input
+							placeholder='Enter list title'
+							type='text'
+							value={listText}
+							onChange={e => setListText(e.target.value)}
+						/>
+						<div>
+							<button type='button' onClick={handleList}>
+								Add List
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	);
+};
+
+export default List;

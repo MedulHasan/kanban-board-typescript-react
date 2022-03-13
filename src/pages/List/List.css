@@ -1,0 +1,45 @@
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+	padding: 0;
+}
+.add-list {
+	display: flex;
+	align-items: center;
+	column-gap: 2px;
+	font-size: 16px;
+	border: 0;
+	/* background-color: #bbc3c2; */
+	border-radius: 2px;
+	padding: 10px 10px;
+	width: 15%;
+	cursor: pointer;
+	margin-top: 10px;
+}
+.add-card {
+	width: 100%;
+	padding: 0;
+}
+.add-list:hover {
+	background-color: '#fff';
+}
+.all-lists {
+	display: flex;
+	column-gap: 10px;
+}
+.single-list {
+	background-color: #eaecf0;
+	padding: 10px;
+	text-align: left;
+	width: 200px;
+	height: 70px;
+}
+.col-name {
+	font-size: 18px;
+	margin-bottom: 25px;
+}
