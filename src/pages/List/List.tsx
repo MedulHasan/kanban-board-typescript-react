@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IoIosAdd } from 'react-icons/io';
+import Card from './Card';
 import './List.css';
 
 interface CardArray {
@@ -10,12 +11,12 @@ interface CardArray {
 interface ColList {
 	id: number;
 	title: string;
+	isAddCard: boolean;
 	card?: CardArray[];
 }
 
 const List: React.FC = () => {
 	const [addFirstList, setAddFirstList] = useState<boolean>(true);
-	// const [addFirstCard, setAddFirstCard] = useState<boolean>(true);
 	const [listText, setListText] = useState<string>('');
 	const [lists, setLists] = useState<ColList[]>([]);
 
@@ -24,14 +25,18 @@ const List: React.FC = () => {
 	};
 
 	const handleList = () => {
-		setLists([...lists, { id: Date.now(), title: listText }]);
+		setLists([...lists, { id: Date.now(), title: listText, isAddCard: false }]);
 		setListText('');
 	};
 
 	const handleCreateCard = (id: number) => {
-		const addCard = lists.find(list => list.id === id);
-		console.log(addCard);
-		// setAddFirstCard(false);
+		const newLists = lists.map(list => {
+			if (list.id === id) {
+				return { ...list, isAddCard: true };
+			}
+			return list;
+		});
+		setLists(newLists);
 	};
 
 	return (
@@ -39,16 +44,20 @@ const List: React.FC = () => {
 			{lists.map(list => (
 				<div key={list.id} className='single-list'>
 					<h5 className='col-name'>{list.title}</h5>
-					<div>
-						<button
-							type='button'
-							className='add-list add-card'
-							onClick={() => handleCreateCard(list.id)}
-						>
-							<IoIosAdd />
-							Add a Card
-						</button>
-					</div>
+					{!list.isAddCard ? (
+						<div>
+							<button
+								type='button'
+								className='add-list add-card'
+								onClick={() => handleCreateCard(list.id)}
+							>
+								<IoIosAdd />
+								Add a Card
+							</button>
+						</div>
+					) : (
+						<Card />
+					)}
 				</div>
 			))}
 			{addFirstList ? (
