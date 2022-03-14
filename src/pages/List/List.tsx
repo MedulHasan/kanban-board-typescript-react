@@ -4,12 +4,12 @@ import Card from '../Card/Card';
 import './List.css';
 
 export interface CardArray {
-	id: number;
+	id: string;
 	title: string;
 }
 
 export interface ColList {
-	id: number;
+	id: string;
 	title: string;
 	isAddCard: boolean;
 	card?: CardArray[];
@@ -27,12 +27,12 @@ const List: React.FC = () => {
 	const handleList = () => {
 		setLists([
 			...lists,
-			{ id: Date.now(), title: listText, isAddCard: false, card: [] },
+			{ id: `list-${Date.now()}`, title: listText, isAddCard: false, card: [] },
 		]);
 		setListText('');
 	};
 
-	const handleCreateCard = (id: number) => {
+	const handleCreateCard = (id: string) => {
 		const newLists = lists.map(list => {
 			if (list.id === id) {
 				return { ...list, isAddCard: true };
@@ -43,11 +43,29 @@ const List: React.FC = () => {
 		setLists(newLists);
 	};
 
+	const dragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
+		console.log('id', id);
+		e.dataTransfer.setData('id', id);
+	};
+
+	const dragOver = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+	};
+
+	const drop = (e: React.DragEvent<HTMLDivElement>, listId: string) => {
+		const id = e.dataTransfer.getData('id');
+		console.log(id, listId);
+	};
+
 	return (
 		<div className='all-lists'>
 			{lists.map(list => (
 				<div key={list.id} className='single-list'>
-					<div className='single-list-column'>
+					<div
+						className='single-list-column'
+						onDragOver={e => dragOver(e)}
+						onDrop={e => drop(e, list.id)}
+					>
 						<h5 className='col-name'>{list.title}</h5>
 						{!list.isAddCard ? (
 							<div>
@@ -63,7 +81,12 @@ const List: React.FC = () => {
 						) : (
 							<div>
 								{list.card?.map(c => (
-									<div key={c.id} className='single-card-item'>
+									<div
+										onDragStart={e => dragStart(e, c.id)}
+										draggable
+										key={c.id}
+										className='single-card-item'
+									>
 										<p>{c.title}</p>
 									</div>
 								))}
