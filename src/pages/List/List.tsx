@@ -43,8 +43,12 @@ const List: React.FC = () => {
 		setLists(newLists);
 	};
 
-	const dragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
-		console.log('id', id);
+	const dragStart = (
+		e: React.DragEvent<HTMLDivElement>,
+		id: string,
+		listId: string
+	) => {
+		console.log(`drag start -> cardId: ${id}, listId: ${listId}`);
 		e.dataTransfer.setData('id', id);
 	};
 
@@ -54,7 +58,18 @@ const List: React.FC = () => {
 
 	const drop = (e: React.DragEvent<HTMLDivElement>, listId: string) => {
 		const id = e.dataTransfer.getData('id');
-		console.log(id, listId);
+		console.log(`drop -> cardId: ${id}, listId: ${listId}`);
+		let addCard: ColList;
+		const list = lists.map(l => {
+			if (l.card) {
+				if (l.id === listId) {
+					addCard = {
+						...l,
+						card: [...l.card],
+					};
+				}
+			}
+		});
 	};
 
 	return (
@@ -82,7 +97,7 @@ const List: React.FC = () => {
 							<div>
 								{list.card?.map(c => (
 									<div
-										onDragStart={e => dragStart(e, c.id)}
+										onDragStart={e => dragStart(e, c.id, list.id)}
 										draggable
 										key={c.id}
 										className='single-card-item'
