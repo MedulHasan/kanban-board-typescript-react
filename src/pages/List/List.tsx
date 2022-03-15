@@ -19,6 +19,7 @@ const List: React.FC = () => {
 	const [addFirstList, setAddFirstList] = useState<boolean>(true);
 	const [listText, setListText] = useState<string>('');
 	const [lists, setLists] = useState<ColList[]>([]);
+	console.log('lists:', lists);
 
 	const handleAddFirstList = () => {
 		setAddFirstList(false);
@@ -45,11 +46,53 @@ const List: React.FC = () => {
 
 	const dragStart = (
 		e: React.DragEvent<HTMLDivElement>,
-		id: string,
+		card: CardArray
+		// listId: string
+	) => {
+		e.dataTransfer.setData('card', JSON.stringify(card));
+		/* let newCardList: CardArray[];
+		let addCard: ColList;
+		const deleteCard = lists.map(l => {
+			if (l.card) {
+				if (l.id === listId) {
+					newCardList = l.card?.filter(c => c.id !== card.id);
+					addCard = {
+						...l,
+						card: newCardList,
+					};
+					// console.log(addCard);
+					// return addCard;
+				}
+				addCard = l;
+			}
+			return addCard;
+		});
+		setLists(deleteCard); */
+	};
+
+	const drag = (
+		e: React.DragEvent<HTMLDivElement>,
+		card: CardArray,
 		listId: string
 	) => {
-		console.log(`drag start -> cardId: ${id}, listId: ${listId}`);
-		e.dataTransfer.setData('id', id);
+		let newCardList: CardArray[];
+		let addCard: ColList;
+		const deleteCard = lists.map(l => {
+			if (l.card) {
+				if (l.id === listId) {
+					newCardList = l.card?.filter(c => c.id !== card.id);
+					addCard = {
+						...l,
+						card: newCardList,
+					};
+					// console.log(addCard);
+					return addCard;
+				}
+				addCard = l;
+			}
+			return addCard;
+		});
+		setLists(deleteCard);
 	};
 
 	const dragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -57,19 +100,23 @@ const List: React.FC = () => {
 	};
 
 	const drop = (e: React.DragEvent<HTMLDivElement>, listId: string) => {
-		const id = e.dataTransfer.getData('id');
-		console.log(`drop -> cardId: ${id}, listId: ${listId}`);
+		const card = e.dataTransfer.getData('card');
 		let addCard: ColList;
-		const list = lists.map(l => {
-			if (l.card) {
+		const newList = lists.map(l => {
+			if (l?.card) {
 				if (l.id === listId) {
 					addCard = {
 						...l,
-						card: [...l.card],
+						card: [...l.card, JSON.parse(card)],
 					};
+					return addCard;
 				}
+				addCard = l;
+				return addCard;
 			}
+			return addCard;
 		});
+		setLists(newList);
 	};
 
 	return (
@@ -97,8 +144,9 @@ const List: React.FC = () => {
 							<div>
 								{list.card?.map(c => (
 									<div
-										onDragStart={e => dragStart(e, c.id, list.id)}
+										onDragStart={e => dragStart(e, c)}
 										draggable
+										onDragEnd={e => drag(e, c, list.id)}
 										key={c.id}
 										className='single-card-item'
 									>
