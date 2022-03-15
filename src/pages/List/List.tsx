@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { BsFillLockFill, BsFillUnlockFill } from 'react-icons/bs';
 import { IoIosAdd } from 'react-icons/io';
+import { MdDelete } from 'react-icons/md';
 import Card from '../Card/Card';
 import './List.css';
 
 export interface CardArray {
 	id: string;
 	title: string;
+	isDraggable: boolean;
 }
 
 export interface ColList {
@@ -19,7 +22,6 @@ const List: React.FC = () => {
 	const [addFirstList, setAddFirstList] = useState<boolean>(true);
 	const [listText, setListText] = useState<string>('');
 	const [lists, setLists] = useState<ColList[]>([]);
-	console.log('lists:', lists);
 
 	const handleAddFirstList = () => {
 		setAddFirstList(false);
@@ -44,30 +46,8 @@ const List: React.FC = () => {
 		setLists(newLists);
 	};
 
-	const dragStart = (
-		e: React.DragEvent<HTMLDivElement>,
-		card: CardArray
-		// listId: string
-	) => {
+	const dragStart = (e: React.DragEvent<HTMLDivElement>, card: CardArray) => {
 		e.dataTransfer.setData('card', JSON.stringify(card));
-		/* let newCardList: CardArray[];
-		let addCard: ColList;
-		const deleteCard = lists.map(l => {
-			if (l.card) {
-				if (l.id === listId) {
-					newCardList = l.card?.filter(c => c.id !== card.id);
-					addCard = {
-						...l,
-						card: newCardList,
-					};
-					// console.log(addCard);
-					// return addCard;
-				}
-				addCard = l;
-			}
-			return addCard;
-		});
-		setLists(deleteCard); */
 	};
 
 	const drag = (
@@ -85,7 +65,6 @@ const List: React.FC = () => {
 						...l,
 						card: newCardList,
 					};
-					// console.log(addCard);
 					return addCard;
 				}
 				addCard = l;
@@ -119,6 +98,40 @@ const List: React.FC = () => {
 		setLists(newList);
 	};
 
+	const handleDraggable = (cardId: string, listId: string) => {
+		let newCard: CardArray[];
+		const newLists = lists.map(list => {
+			if (list.card && list.card?.length > 0 && list.id === listId) {
+				newCard = list.card?.map(l => {
+					if (l.id === cardId) {
+						return { ...l, isDraggable: !l.isDraggable };
+					}
+					return l;
+				});
+				return { ...list, card: newCard };
+			}
+			return list;
+		});
+		setLists(newLists);
+	};
+
+	const handleDeleteCard = (cardId: string, listId: string) => {
+		let restCard: CardArray[];
+		const newLists = lists.map(list => {
+			if (list.card && list.card?.length > 0 && list.id === listId) {
+				restCard = list.card?.filter(l => l.id !== cardId);
+				return { ...list, card: restCard };
+			}
+			return list;
+		});
+		setLists(newLists);
+	};
+
+	const handleDeleteList = (listId: string) => {
+		const restLists = lists.filter(list => list.id !== listId);
+		setLists(restLists);
+	};
+
 	return (
 		<div className='all-lists'>
 			{lists.map(list => (
@@ -128,7 +141,29 @@ const List: React.FC = () => {
 						onDragOver={e => dragOver(e)}
 						onDrop={e => drop(e, list.id)}
 					>
-						<h5 className='col-name'>{list.title}</h5>
+						<div className='list-container'>
+							<h5 className='col-name'>{list.title}</h5>
+							<MdDelete onClick={() => handleDeleteList(list.id)} />
+						</div>
+						{list.card?.map(c => (
+							<div
+								onDragStart={e => dragStart(e, c)}
+								draggable={c.isDraggable}
+								onDragEnd={e => drag(e, c, list.id)}
+								key={c.id}
+								className='single-card-item'
+							>
+								<p>{c.title}</p>
+								<div>
+									{!c.isDraggable ? (
+										<BsFillLockFill onClick={() => handleDraggable(c.id, list.id)} />
+									) : (
+										<BsFillUnlockFill onClick={() => handleDraggable(c.id, list.id)} />
+									)}
+									<MdDelete onClick={() => handleDeleteCard(c.id, list.id)} />
+								</div>
+							</div>
+						))}
 						{!list.isAddCard ? (
 							<div>
 								<button
@@ -142,17 +177,6 @@ const List: React.FC = () => {
 							</div>
 						) : (
 							<div>
-								{list.card?.map(c => (
-									<div
-										onDragStart={e => dragStart(e, c)}
-										draggable
-										onDragEnd={e => drag(e, c, list.id)}
-										key={c.id}
-										className='single-card-item'
-									>
-										<p>{c.title}</p>
-									</div>
-								))}
 								<Card list={list} lists={lists} setLists={setLists} />
 							</div>
 						)}

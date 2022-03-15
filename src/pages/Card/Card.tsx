@@ -17,7 +17,10 @@ const Card: React.FC<Props> = ({ list, lists, setLists }) => {
 				if (l.id === list.id) {
 					addCard = {
 						...list,
-						card: [...l.card, { id: `card-${Date.now()}`, title: cardText }],
+						card: [
+							...l.card,
+							{ id: `card-${Date.now()}`, title: cardText, isDraggable: true },
+						],
 					};
 					return addCard;
 				}
