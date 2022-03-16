@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AiOutlineEdit } from 'react-icons/ai';
 import { BsFillLockFill, BsFillUnlockFill } from 'react-icons/bs';
 import { IoIosAdd } from 'react-icons/io';
 import { MdDelete } from 'react-icons/md';
@@ -16,12 +17,13 @@ export interface ColList {
 	title: string;
 	isAddCard: boolean;
 	card?: CardArray[];
+	editTitle: boolean;
 }
 
 const List: React.FC = () => {
-	const [addFirstList, setAddFirstList] = useState<boolean>(true);
-	const [listText, setListText] = useState<string>('');
 	const [lists, setLists] = useState<ColList[]>([]);
+	const [listText, setListText] = useState<string>('');
+	const [addFirstList, setAddFirstList] = useState<boolean>(true);
 
 	const handleAddFirstList = () => {
 		setAddFirstList(false);
@@ -30,7 +32,13 @@ const List: React.FC = () => {
 	const handleList = () => {
 		setLists([
 			...lists,
-			{ id: `list-${Date.now()}`, title: listText, isAddCard: false, card: [] },
+			{
+				id: `list-${Date.now()}`,
+				title: listText,
+				isAddCard: false,
+				card: [],
+				editTitle: false,
+			},
 		]);
 		setListText('');
 	};
@@ -132,6 +140,27 @@ const List: React.FC = () => {
 		setLists(restLists);
 	};
 
+	const handleEditList = (listId: string) => {
+		const editItem = lists.find(list => list.id === listId);
+		if (editItem?.id) {
+			editItem.editTitle = true;
+			setLists([...lists, editItem]);
+		}
+		console.log(editItem);
+	};
+
+	/* const handleEditCard = (cardId: string, listId: string) => {
+		let editCard: CardArray;
+		const newLists = lists.map(list => {
+			if (list.card && list.card?.length > 0 && list.id === listId) {
+				editCard = list.card?.find(l => l.id === cardId);
+				return { ...list, card: editCard };
+			}
+			return list;
+		});
+		setLists(newLists);
+	}; */
+
 	return (
 		<div className='all-lists'>
 			{lists.map(list => (
@@ -141,10 +170,23 @@ const List: React.FC = () => {
 						onDragOver={e => dragOver(e)}
 						onDrop={e => drop(e, list.id)}
 					>
-						<div className='list-container'>
-							<h5 className='col-name'>{list.title}</h5>
-							<MdDelete onClick={() => handleDeleteList(list.id)} />
-						</div>
+						{list.editTitle ? (
+							<div>
+								<input type='text' value={list.title} />
+							</div>
+						) : (
+							<div className='list-container'>
+								<h5 className='col-name'>{list.title}</h5>
+								<div>
+									<MdDelete
+										className='delete-list'
+										onClick={() => handleDeleteList(list.id)}
+									/>
+									<AiOutlineEdit onClick={() => handleEditList(list.id)} />
+								</div>
+							</div>
+						)}
+
 						{list.card?.map(c => (
 							<div
 								onDragStart={e => dragStart(e, c)}
@@ -154,13 +196,14 @@ const List: React.FC = () => {
 								className='single-card-item'
 							>
 								<p>{c.title}</p>
-								<div>
+								<div className='card-icons'>
 									{!c.isDraggable ? (
 										<BsFillLockFill onClick={() => handleDraggable(c.id, list.id)} />
 									) : (
 										<BsFillUnlockFill onClick={() => handleDraggable(c.id, list.id)} />
 									)}
 									<MdDelete onClick={() => handleDeleteCard(c.id, list.id)} />
+									{/* <AiOutlineEdit onClick={() => handleEditCard(c.id, list.id)} /> */}
 								</div>
 							</div>
 						))}
