@@ -52,6 +52,7 @@ const Card: React.FC<Props> = ({ list, lists, setLists }) => {
 		<div>
 			<div>
 				<input
+					className='single-list-input'
 					placeholder='Enter list title'
 					type='text'
 					value={cardText}
@@ -59,7 +60,11 @@ const Card: React.FC<Props> = ({ list, lists, setLists }) => {
 					onKeyPress={e => handleEnterAddCard(e)}
 				/>
 				<div>
-					<button type='button' onClick={handleAddCardText}>
+					<button
+						className='add-list add-card'
+						type='button'
+						onClick={handleAddCardText}
+					>
 						Add Card
 					</button>
 				</div>

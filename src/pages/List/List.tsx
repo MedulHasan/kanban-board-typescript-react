@@ -241,113 +241,124 @@ const List: React.FC = () => {
 	};
 
 	return (
-		<div className='all-lists'>
-			{lists.map(list => (
-				<div key={list.id} className='single-list'>
-					<div
-						className='single-list-column'
-						onDragOver={e => dragOver(e)}
-						onDrop={e => drop(e, list.id)}
-					>
-						{list.editTitle ? (
-							<div>
-								<input
-									type='text'
-									value={list.title}
-									onChange={e => handleUpdateListValue(e.target.value, list.id)}
-									onKeyPress={e => handlePressUpdateTitle(e, list.id)}
-								/>
-							</div>
-						) : (
-							<div className='list-container'>
-								<h5 className='col-name'>{list.title}</h5>
+		<>
+			<h2 className='header'>Kanban Board</h2>
+			<div className='all-lists'>
+				{lists.map(list => (
+					<div key={list.id} className='single-list'>
+						<div
+							className='single-list-column'
+							onDragOver={e => dragOver(e)}
+							onDrop={e => drop(e, list.id)}
+						>
+							{list.editTitle ? (
 								<div>
-									<MdDelete
-										className='delete-list'
-										onClick={() => handleDeleteList(list.id)}
+									<input
+										className='single-list-input'
+										type='text'
+										value={list.title}
+										onChange={e => handleUpdateListValue(e.target.value, list.id)}
+										onKeyPress={e => handlePressUpdateTitle(e, list.id)}
 									/>
-									<AiOutlineEdit onClick={() => handleEditList(list.id)} />
 								</div>
-							</div>
-						)}
-
-						{list.card?.map(c => (
-							<div>
-								{c.editCard ? (
-									<div>
-										<input
-											type='text'
-											value={c.title}
-											onChange={e => handleUpdtaeCardTitle(e.target.value, c.id, list.id)}
-											onKeyPress={e => handlePressUpdateCardTitle(e, c.id, list.id)}
-										/>
-									</div>
-								) : (
-									<div
-										onDragStart={e => dragStart(e, c)}
-										draggable={c.isDraggable}
-										onDragEnd={e => drag(e, c, list.id)}
-										key={c.id}
-										className='single-card-item'
-										onDoubleClick={() => handleEnableEditCard(c.id, list.id)}
-									>
-										<p>{c.title}</p>
-										<div className='card-icons'>
-											{!c.isDraggable ? (
-												<BsFillLockFill onClick={() => handleDraggable(c.id, list.id)} />
-											) : (
-												<BsFillUnlockFill onClick={() => handleDraggable(c.id, list.id)} />
-											)}
-											<MdDelete onClick={() => handleDeleteCard(c.id, list.id)} />
-											{/* <AiOutlineEdit onClick={() => handleEditCard(c.id, list.id)} /> */}
-										</div>
-									</div>
-								)}
-							</div>
-						))}
-						{!list.isAddCard ? (
-							<div>
-								<button
-									type='button'
-									className='add-list add-card'
-									onClick={() => handleCreateCard(list.id)}
+							) : (
+								<div
+									className='list-container'
+									onDoubleClick={() => handleEditList(list.id)}
 								>
-									<IoIosAdd />
-									Add a Card
-								</button>
-							</div>
-						) : (
-							<div>
-								<Card list={list} lists={lists} setLists={setLists} />
-							</div>
-						)}
-					</div>
-				</div>
-			))}
-			{addFirstList ? (
-				<button type='button' className='add-list' onClick={handleAddFirstList}>
-					<IoIosAdd />
-					Add a list
-				</button>
-			) : (
-				<div>
-					<div className='single-list'>
-						<input
-							placeholder='Enter list title'
-							type='text'
-							value={listText}
-							onChange={e => setListText(e.target.value)}
-							onKeyPress={e => handleEnterAddList(e)}
-						/>
-						<div>
-							<button type='button' onClick={handleList}>
-								Add List
-							</button>
+									<h5 className='col-name'>{list.title}</h5>
+									<div>
+										<MdDelete
+											className='delete-list'
+											onClick={() => handleDeleteList(list.id)}
+										/>
+										{/* <AiOutlineEdit onClick={() => handleEditList(list.id)} /> */}
+									</div>
+								</div>
+							)}
+
+							{list.card?.map(c => (
+								<div>
+									{c.editCard ? (
+										<div>
+											<input
+												className='single-list-input'
+												type='text'
+												value={c.title}
+												onChange={e => handleUpdtaeCardTitle(e.target.value, c.id, list.id)}
+												onKeyPress={e => handlePressUpdateCardTitle(e, c.id, list.id)}
+											/>
+										</div>
+									) : (
+										<div
+											onDragStart={e => dragStart(e, c)}
+											draggable={c.isDraggable}
+											onDragEnd={e => drag(e, c, list.id)}
+											key={c.id}
+											className='single-card-item'
+											onDoubleClick={() => handleEnableEditCard(c.id, list.id)}
+										>
+											<p>{c.title}</p>
+											<div className='card-icons'>
+												{!c.isDraggable ? (
+													<BsFillLockFill onClick={() => handleDraggable(c.id, list.id)} />
+												) : (
+													<BsFillUnlockFill onClick={() => handleDraggable(c.id, list.id)} />
+												)}
+												<MdDelete onClick={() => handleDeleteCard(c.id, list.id)} />
+												<AiOutlineEdit
+													onClick={() => handleEnableEditCard(c.id, list.id)}
+												/>
+											</div>
+										</div>
+									)}
+								</div>
+							))}
+							{!list.isAddCard ? (
+								<div>
+									<button
+										type='button'
+										className='add-list add-card'
+										onClick={() => handleCreateCard(list.id)}
+									>
+										{/* <IoIosAdd /> */}
+										Add Card
+									</button>
+								</div>
+							) : (
+								<div>
+									<Card list={list} lists={lists} setLists={setLists} />
+								</div>
+							)}
 						</div>
 					</div>
-				</div>
-			)}
-		</div>
+				))}
+				{addFirstList ? (
+					<button type='button' className='add-list' onClick={handleAddFirstList}>
+						<IoIosAdd />
+						Add list
+					</button>
+				) : (
+					<div>
+						<div className='single-list'>
+							<input
+								className='single-list-input'
+								placeholder='Enter List Title'
+								type='text'
+								value={listText}
+								onChange={e => setListText(e.target.value)}
+								onKeyPress={e => handleEnterAddList(e)}
+							/>
+							<div>
+								<button className='add-button' type='button' onClick={handleList}>
+									Add List
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
+			</div>
+		</>
 	);
 };
 

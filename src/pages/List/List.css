@@ -8,6 +8,11 @@ h6 {
 	margin: 0;
 	padding: 0;
 }
+.header {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 30px;
+}
 .add-list {
 	display: flex;
 	align-items: center;
@@ -19,10 +24,12 @@ h6 {
 	width: 15%;
 	cursor: pointer;
 	margin-top: 10px;
+	background-color: rgb(238, 132, 100);
+	border-radius: 3px;
 }
 .add-card {
-	width: 100%;
-	padding: 0;
+	width: 50%;
+	padding: 10px;
 }
 .add-list:hover {
 	background-color: '#fff';
@@ -39,10 +46,26 @@ h6 {
 	text-align: left;
 	height: 70px;
 }
-.single-list-column {
-	background-color: #eaecf0;
-	width: 200px;
+.single-list-input {
 	padding: 10px;
+	border-radius: 3px;
+	font-size: 16px;
+	margin-bottom: 5px;
+	width: 90%;
+}
+.add-button {
+	background-color: rgb(22, 194, 236);
+	border: 0;
+	font-size: 16px;
+	padding: 10px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.single-list-column {
+	background-color: #acf1b0;
+	width: 270px;
+	padding: 10px;
+	border-radius: 3px;
 }
 .col-name {
 	font-size: 18px;
