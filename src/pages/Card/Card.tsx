@@ -19,7 +19,12 @@ const Card: React.FC<Props> = ({ list, lists, setLists }) => {
 						...list,
 						card: [
 							...l.card,
-							{ id: `card-${Date.now()}`, title: cardText, isDraggable: true },
+							{
+								id: `card-${Date.now()}`,
+								title: cardText,
+								isDraggable: true,
+								editCard: false,
+							},
 						],
 					};
 					return addCard;

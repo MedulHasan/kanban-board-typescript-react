@@ -10,6 +10,7 @@ export interface CardArray {
 	id: string;
 	title: string;
 	isDraggable: boolean;
+	editCard: boolean;
 }
 
 export interface ColList {
@@ -177,17 +178,62 @@ const List: React.FC = () => {
 		}
 	};
 
-	/* const handleEditCard = (cardId: string, listId: string) => {
-		let editCard: CardArray;
+	const handleEnableEditCard = (cardId: string, listId: string) => {
+		let newCard: CardArray[];
+		const newList = lists.map(list => {
+			if (list.card && list.card?.length > 0 && list.id === listId) {
+				newCard = list.card?.map(c => {
+					if (c.id === cardId) {
+						return { ...c, editCard: !c.editCard };
+					}
+					return c;
+				});
+				return { ...list, card: newCard };
+			}
+			return list;
+		});
+		setLists(newList);
+	};
+
+	const handlePressUpdateCardTitle = (
+		e: React.KeyboardEvent<HTMLInputElement>,
+		cardId: string,
+		listId: string
+	) => {
+		if (e.key === 'Enter') {
+			let newCard: CardArray[];
+			const newList = lists.map(list => {
+				if (list.card && list.card?.length > 0 && list.id === listId) {
+					newCard = list.card?.map(c => {
+						if (c.id === cardId) {
+							return { ...c, editCard: !c.editCard };
+						}
+						return c;
+					});
+					return { ...list, card: newCard };
+				}
+				return list;
+			});
+			setLists(newList);
+		}
+	};
+
+	const handleUpdtaeCardTitle = (e: string, cardId: string, listId: string) => {
+		let editCard: CardArray[];
 		const newLists = lists.map(list => {
 			if (list.card && list.card?.length > 0 && list.id === listId) {
-				editCard = list.card?.find(l => l.id === cardId);
+				editCard = list.card?.map(c => {
+					if (c.id === cardId) {
+						return { ...c, title: e };
+					}
+					return c;
+				});
 				return { ...list, card: editCard };
 			}
 			return list;
 		});
 		setLists(newLists);
-	}; */
+	};
 
 	return (
 		<div className='all-lists'>
@@ -221,23 +267,37 @@ const List: React.FC = () => {
 						)}
 
 						{list.card?.map(c => (
-							<div
-								onDragStart={e => dragStart(e, c)}
-								draggable={c.isDraggable}
-								onDragEnd={e => drag(e, c, list.id)}
-								key={c.id}
-								className='single-card-item'
-							>
-								<p>{c.title}</p>
-								<div className='card-icons'>
-									{!c.isDraggable ? (
-										<BsFillLockFill onClick={() => handleDraggable(c.id, list.id)} />
-									) : (
-										<BsFillUnlockFill onClick={() => handleDraggable(c.id, list.id)} />
-									)}
-									<MdDelete onClick={() => handleDeleteCard(c.id, list.id)} />
-									{/* <AiOutlineEdit onClick={() => handleEditCard(c.id, list.id)} /> */}
-								</div>
+							<div>
+								{c.editCard ? (
+									<div>
+										<input
+											type='text'
+											value={c.title}
+											onChange={e => handleUpdtaeCardTitle(e.target.value, c.id, list.id)}
+											onKeyPress={e => handlePressUpdateCardTitle(e, c.id, list.id)}
+										/>
+									</div>
+								) : (
+									<div
+										onDragStart={e => dragStart(e, c)}
+										draggable={c.isDraggable}
+										onDragEnd={e => drag(e, c, list.id)}
+										key={c.id}
+										className='single-card-item'
+										onDoubleClick={() => handleEnableEditCard(c.id, list.id)}
+									>
+										<p>{c.title}</p>
+										<div className='card-icons'>
+											{!c.isDraggable ? (
+												<BsFillLockFill onClick={() => handleDraggable(c.id, list.id)} />
+											) : (
+												<BsFillUnlockFill onClick={() => handleDraggable(c.id, list.id)} />
+											)}
+											<MdDelete onClick={() => handleDeleteCard(c.id, list.id)} />
+											{/* <AiOutlineEdit onClick={() => handleEditCard(c.id, list.id)} /> */}
+										</div>
+									</div>
+								)}
 							</div>
 						))}
 						{!list.isAddCard ? (
