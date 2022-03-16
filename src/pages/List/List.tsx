@@ -141,12 +141,40 @@ const List: React.FC = () => {
 	};
 
 	const handleEditList = (listId: string) => {
-		const editItem = lists.find(list => list.id === listId);
-		if (editItem?.id) {
-			editItem.editTitle = true;
-			setLists([...lists, editItem]);
+		const editItem = lists.map(list => {
+			if (list.id === listId) {
+				return { ...list, editTitle: !list.editTitle };
+			}
+			return list;
+		});
+
+		setLists(editItem);
+	};
+
+	const handleUpdateListValue = (e: string, listId: string) => {
+		const editItem = lists.map(list => {
+			if (list.id === listId) {
+				return { ...list, title: e };
+			}
+			return list;
+		});
+		setLists(editItem);
+	};
+
+	const handlePressUpdateTitle = (
+		e: React.KeyboardEvent<HTMLInputElement>,
+		listId: string
+	) => {
+		if (e.key === 'Enter') {
+			const editItem = lists.map(list => {
+				if (list.id === listId) {
+					return { ...list, editTitle: !list.editTitle };
+				}
+				return list;
+			});
+
+			setLists(editItem);
 		}
-		console.log(editItem);
 	};
 
 	/* const handleEditCard = (cardId: string, listId: string) => {
@@ -172,7 +200,12 @@ const List: React.FC = () => {
 					>
 						{list.editTitle ? (
 							<div>
-								<input type='text' value={list.title} />
+								<input
+									type='text'
+									value={list.title}
+									onChange={e => handleUpdateListValue(e.target.value, list.id)}
+									onKeyPress={e => handlePressUpdateTitle(e, list.id)}
+								/>
 							</div>
 						) : (
 							<div className='list-container'>
