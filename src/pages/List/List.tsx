@@ -26,11 +26,12 @@ const List: React.FC = () => {
 	const [listText, setListText] = useState<string>('');
 	const [addFirstList, setAddFirstList] = useState<boolean>(true);
 
+	// add list
 	const handleAddFirstList = () => {
 		setAddFirstList(false);
 	};
 
-	const handleList = () => {
+	const handleListAdd = () => {
 		setLists([
 			...lists,
 			{
@@ -44,6 +45,17 @@ const List: React.FC = () => {
 		setListText('');
 	};
 
+	const handleList = () => {
+		handleListAdd();
+	};
+
+	const handleEnterAddList = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter') {
+			handleListAdd();
+		}
+	};
+
+	// add card
 	const handleCreateCard = (id: string) => {
 		const newLists = lists.map(list => {
 			if (list.id === id) {
@@ -55,6 +67,7 @@ const List: React.FC = () => {
 		setLists(newLists);
 	};
 
+	// drag and drop
 	const dragStart = (e: React.DragEvent<HTMLDivElement>, card: CardArray) => {
 		e.dataTransfer.setData('card', JSON.stringify(card));
 	};
@@ -124,6 +137,7 @@ const List: React.FC = () => {
 		setLists(newLists);
 	};
 
+	// delete card
 	const handleDeleteCard = (cardId: string, listId: string) => {
 		let restCard: CardArray[];
 		const newLists = lists.map(list => {
@@ -136,12 +150,14 @@ const List: React.FC = () => {
 		setLists(newLists);
 	};
 
+	// delete list
 	const handleDeleteList = (listId: string) => {
 		const restLists = lists.filter(list => list.id !== listId);
 		setLists(restLists);
 	};
 
-	const handleEditList = (listId: string) => {
+	// update list
+	const handleUpdateTitle = (listId: string) => {
 		const editItem = lists.map(list => {
 			if (list.id === listId) {
 				return { ...list, editTitle: !list.editTitle };
@@ -150,6 +166,10 @@ const List: React.FC = () => {
 		});
 
 		setLists(editItem);
+	};
+
+	const handleEditList = (listId: string) => {
+		handleUpdateTitle(listId);
 	};
 
 	const handleUpdateListValue = (e: string, listId: string) => {
@@ -167,18 +187,12 @@ const List: React.FC = () => {
 		listId: string
 	) => {
 		if (e.key === 'Enter') {
-			const editItem = lists.map(list => {
-				if (list.id === listId) {
-					return { ...list, editTitle: !list.editTitle };
-				}
-				return list;
-			});
-
-			setLists(editItem);
+			handleUpdateTitle(listId);
 		}
 	};
 
-	const handleEnableEditCard = (cardId: string, listId: string) => {
+	// updtae card
+	const handleCardUpdate = (cardId: string, listId: string) => {
 		let newCard: CardArray[];
 		const newList = lists.map(list => {
 			if (list.card && list.card?.length > 0 && list.id === listId) {
@@ -195,26 +209,17 @@ const List: React.FC = () => {
 		setLists(newList);
 	};
 
+	const handleEnableEditCard = (cardId: string, listId: string) => {
+		handleCardUpdate(cardId, listId);
+	};
+
 	const handlePressUpdateCardTitle = (
 		e: React.KeyboardEvent<HTMLInputElement>,
 		cardId: string,
 		listId: string
 	) => {
 		if (e.key === 'Enter') {
-			let newCard: CardArray[];
-			const newList = lists.map(list => {
-				if (list.card && list.card?.length > 0 && list.id === listId) {
-					newCard = list.card?.map(c => {
-						if (c.id === cardId) {
-							return { ...c, editCard: !c.editCard };
-						}
-						return c;
-					});
-					return { ...list, card: newCard };
-				}
-				return list;
-			});
-			setLists(newList);
+			handleCardUpdate(cardId, listId);
 		}
 	};
 
@@ -332,6 +337,7 @@ const List: React.FC = () => {
 							type='text'
 							value={listText}
 							onChange={e => setListText(e.target.value)}
+							onKeyPress={e => handleEnterAddList(e)}
 						/>
 						<div>
 							<button type='button' onClick={handleList}>

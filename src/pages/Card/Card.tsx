@@ -10,7 +10,7 @@ interface Props {
 const Card: React.FC<Props> = ({ list, lists, setLists }) => {
 	const [cardText, setCardText] = useState('');
 
-	const handleAddCardText = () => {
+	const handleAddCard = () => {
 		let addCard: ColList;
 		const newLists = lists.map(l => {
 			if (l.card) {
@@ -38,6 +38,16 @@ const Card: React.FC<Props> = ({ list, lists, setLists }) => {
 		setCardText('');
 	};
 
+	const handleAddCardText = () => {
+		handleAddCard();
+	};
+
+	const handleEnterAddCard = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter') {
+			handleAddCard();
+		}
+	};
+
 	return (
 		<div>
 			<div>
@@ -46,6 +56,7 @@ const Card: React.FC<Props> = ({ list, lists, setLists }) => {
 					type='text'
 					value={cardText}
 					onChange={e => setCardText(e.target.value)}
+					onKeyPress={e => handleEnterAddCard(e)}
 				/>
 				<div>
 					<button type='button' onClick={handleAddCardText}>
